@@ -91,6 +91,8 @@ class Compass:
 		return self._calculate_heading(x, y)
 	
 	def read_heading(self, samples_to_average = 4):
+		self.read_heading_single()
+		time.sleep(0.005)
 		heading = 0.0
 		for _ in range(samples_to_average):
 			heading += self.read_heading_single()
