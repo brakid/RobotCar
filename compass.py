@@ -1,6 +1,7 @@
 import smbus
 import time
 import math
+import statistics
 
 DATA_REGISTER = 0x00
 DATA_REGISTER_COUNT = 6
@@ -90,11 +91,11 @@ class Compass:
 	
 		return self._calculate_heading(x, y)
 	
-	def read_heading(self, samples_to_average = 4):
+	def read_heading(self, samples_to_average = 5):
 		self.read_heading_single()
 		time.sleep(0.005)
-		heading = 0.0
+		headings = []
 		for _ in range(samples_to_average):
-			heading += self.read_heading_single()
+			headings.append(self.read_heading_single())
 			time.sleep(0.005)
-		return heading / samples_to_average
+		return statistics.median(headings)
