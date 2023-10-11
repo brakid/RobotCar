@@ -83,11 +83,19 @@ def has_distance(distance = 10):
     d = car_shield.read_distance()
     return (d == 0) or d > distance
 
-def drive(sec = 1):
+def drive(sec = 2):
+    start_heading = compass.read_heading()
     car_shield.set_forward()
     car_shield.drive()
     stop = time.time() + sec
     while (stop > time.time()) and has_distance():
+        heading = compass.read_heading()
+        difference = get_difference(start_heading, heading)
+        if difference < 0:
+            car_shield.drive_diff(0.4, 0.5)
+        if difference > 0:
+            car_shield.drive_diff(0.5, 0.4)
+
         time.sleep(0.05)
     car_shield.stop()
 

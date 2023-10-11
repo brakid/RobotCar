@@ -91,6 +91,9 @@ class CarShield:
 		self._write_reg(CMD_PWM1, PWM_MIN)
 		self._write_reg(CMD_PWM2, PWM_MIN)
 
-	def drive(self, percentage: float = 0.4) -> None:
-		self._write_reg(CMD_PWM1, PWM_MAX * percentage)
-		self._write_reg(CMD_PWM2, PWM_MAX * percentage)
+	def drive_diff(self, percentage_left: float, percentage_right: float) -> None:
+		self._write_reg(CMD_PWM1, PWM_MAX * percentage_left)
+		self._write_reg(CMD_PWM2, PWM_MAX * percentage_right)
+
+	def drive(self, percentage: float) -> None:
+		self.drive_diff(percentage, percentage)
