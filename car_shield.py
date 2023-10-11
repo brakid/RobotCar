@@ -66,7 +66,7 @@ class CarShield:
 		echo_time = 0.0
 		for _ in range(samples_to_average):
 			echo_time += self._read_reg(CMD_SONIC)
-			time.sleep(0.0005) # 0.5ms
+			time.sleep(0.005) # 5ms
 
 		echo_time /= samples_to_average # echo tme is in mus
 		return (echo_time / 2.0) * SPEED_OF_SOUND # divide by 2 for back and forth distance, result is in cm
@@ -95,5 +95,5 @@ class CarShield:
 		self._write_reg(CMD_PWM1, PWM_MAX * percentage_left)
 		self._write_reg(CMD_PWM2, PWM_MAX * percentage_right)
 
-	def drive(self, percentage: float) -> None:
+	def drive(self, percentage: float = 0.4) -> None:
 		self.drive_diff(percentage, percentage)

@@ -83,7 +83,7 @@ def has_distance(distance = 10):
     d = car_shield.read_distance()
     return (d == 0) or d > distance
 
-def drive(sec = 2):
+def drive(sec = 2, speed = 0.4):
     start_heading = compass.read_heading()
     car_shield.set_forward()
     car_shield.drive()
@@ -92,11 +92,13 @@ def drive(sec = 2):
         heading = compass.read_heading()
         difference = get_difference(start_heading, heading)
         if difference < 0:
-            car_shield.drive_diff(0.4, 0.5)
+            print('Correct to right')
+            car_shield.drive_diff(speed * 1.1, speed)
         if difference > 0:
-            car_shield.drive_diff(0.5, 0.4)
+            print('Correct to left')
+            car_shield.drive_diff(speed, speed * 1.1)
 
-        time.sleep(0.05)
+        time.sleep(0.01)
     car_shield.stop()
 
 def calibrate():
