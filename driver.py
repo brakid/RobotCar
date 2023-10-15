@@ -1,6 +1,5 @@
 import smbus
 import time
-import math
 import random
 from compass import Compass
 from car_shield import CarShield
@@ -13,7 +12,7 @@ compass.init()
 car_shield = CarShield(bus)
 car_shield.init()
 
-DIRECTIONS = 24
+DIRECTIONS = 36
 def heading_to_direction(heading):
     return int(round(heading / (360.0 / DIRECTIONS))) % DIRECTIONS
 
@@ -59,7 +58,7 @@ def turn_right(desired_heading, speed=0.4):
     car_shield.stop()
     car_shield.set_forward()
 
-def turn(desired_heading, speed=0.4):
+def turn(desired_heading, speed=0.4, adjustments=3):
     heading = compass.read_heading()
     difference = get_difference(desired_heading, heading)
     print('Difference', difference)
@@ -68,6 +67,10 @@ def turn(desired_heading, speed=0.4):
         turn_left(desired_heading, speed)
     if difference > 0:
         turn_right(desired_heading, speed)
+
+    # allow to bounce back and forth when aiming at the desired angle
+    if adjustments > 0:
+        turn(desired_heading, speed * 0.95, adjustments-1)
 
 def right_corner():
     heading = compass.read_heading()
@@ -79,9 +82,11 @@ def left_corner():
     desired_heading = (heading - 90 + 360) % 360
     turn(desired_heading)
 
-def has_distance(distance = 10):
+def has_distance(distance = 20):
     d = car_shield.read_distance()
-    return (d == 0) or d > distance
+    cont = (d == 0) or (d > distance)
+    #print('Distance', d, 'Continue', cont)
+    return cont
 
 def drive(sec = 2, speed = 0.4):
     start_heading = compass.read_heading()
@@ -92,14 +97,15 @@ def drive(sec = 2, speed = 0.4):
         heading = compass.read_heading()
         difference = get_difference(start_heading, heading)
         if difference < 0:
-            print('Correct to right')
+            #print('Correct to right')
             car_shield.drive_diff(speed * 1.1, speed)
         if difference > 0:
-            print('Correct to left')
+            #print('Correct to left')
             car_shield.drive_diff(speed, speed * 1.1)
 
         time.sleep(0.01)
     car_shield.stop()
+    #print('Stopped')
 
 def calibrate():
     if random.random() > 0.5:
