@@ -3,6 +3,7 @@ import time
 import random
 from compass import Compass
 from car_shield import CarShield
+from distance import Distance
 
 DIRECTIONS = 36
 
@@ -29,6 +30,8 @@ class Driver:
 
         self.car_shield = CarShield(self.bus)
         self.car_shield.init()
+
+        self.distance = Distance()
 
         # keep track of the global north
         self.north = None
@@ -86,7 +89,7 @@ class Driver:
             self.turn(desired_heading, speed * 0.95, adjustments-1)
 
     def has_distance(self, distance = 20):
-        d = self.car_shield.read_distance()
+        d = self.get_distance()
         cont = (d == 0) or (d > distance)
         #print('Distance', d, 'Continue', cont)
         return cont
@@ -137,8 +140,8 @@ class Driver:
         heading = self.compass.read_heading()
         return normalize(heading - self.north)
     
-    def read_distance(self):
-        return self.car_shield.read_distance()
+    def get_distance(self):
+        return self.distance.get_distance()
 
     def turn_north(self, desired_heading):
         self.turn(normalize(desired_heading + self.north))
